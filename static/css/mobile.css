@@ -1,0 +1,21 @@
+/* Mobile Screen Adaptations */
+@media screen and (max-width: 480px) {
+    body {
+        font-size: 14px;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .main-content {
+        padding: 12px;
+    }
+
+    .auth-card {
+        padding: 18px 14px;
+        margin-top: 10px;
+    }
+
+    /* Prevent overflow on small screens */
+    table, select, input {
+        max-width: 100%;
+    }
+}

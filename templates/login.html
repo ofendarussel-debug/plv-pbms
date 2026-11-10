@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Login - Projector Borrowing System{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+    <div class="auth-header">
+        <h2>PLV PBMS</h2>
+        <p>Projector Borrowing System</p>
+    </div>
+
+    <form action="#" method="POST" class="mobile-form">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-input" placeholder="Enter your username" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+    </form>
+
+{% endblock %}
