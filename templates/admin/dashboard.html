@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — PLV Projector Reservation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo">
+                <div class="admin-brand-text">
+                    <strong>Projector Reservation</strong>
+                    <small>Admin</small>
+                </div>
+            </a>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link active">Dashboard</a>
+                <a href="{{ url_for('admin.requests_page') }}" class="admin-nav-link">Review Requests</a>
+                <a href="{{ url_for('admin.projectors_page') }}" class="admin-nav-link">Projectors</a>
+                <a href="{{ url_for('admin.accounts_page') }}" class="admin-nav-link">Accounts</a>
+                <a href="{{ url_for('admin.reports_page') }}" class="admin-nav-link">Calendar and Reports</a>
+            </nav>
+        </div>
+        <div class="admin-logout-box">
+            <a href="{{ url_for('auth.logout') }}" class="admin-logout-btn">Logout</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="admin-page-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Overview of today's projector reservations.</p>
+            </div>
+        </div>
+
+        <!-- 4 Summary Stat Cards -->
+        <section class="s2-stats-row s2-stats-4">
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Pending requests</span>
+                <span class="s2-stat-num color-amber">{{ pending_count }}</span>
+            </div>
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Today's reservations</span>
+                <span class="s2-stat-num color-navy">{{ todays_count }}</span>
+            </div>
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Projectors available</span>
+                <span class="s2-stat-num color-green">{{ available_projectors }}</span>
+            </div>
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Overdue returns</span>
+                <span class="s2-stat-num" style="color: #DC2626;">{{ overdue_count }}</span>
+            </div>
+        </section>
+
+        <!-- Pending Requests Table -->
+        <section class="admin-card">
+            <div class="admin-card-header">
+                <h2>Pending requests</h2>
+                <a href="{{ url_for('admin.requests_page', status='Pending') }}" class="s2-view-all">View all</a>
+            </div>
+            {% if pending_rows %}
+                <table class="s2-table">
+                    <thead>
+                        <tr>
+                            <th>Ref. No.</th>
+                            <th>Section</th>
+                            <th>Subject</th>
+                            <th>Date and time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in pending_rows %}
+                            <tr>
+                                <td class="font-medium">{{ row.reservation_code }}</td>
+                                <td>{{ row.section_name }}</td>
+                                <td>{{ row.subject_name }}</td>
+                                <td class="text-muted">{{ row.date_time }}</td>
+                                <td>
+                                    <a href="{{ url_for('admin.requests_page', status='Pending', selected=row.reservation_id) }}" class="action-link">Review</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted" style="font-size: 0.9rem;">No pending requests right now.</p>
+            {% endif %}
+        </section>
+
+        <!-- Projector Status Today -->
+        <section class="admin-card">
+            <div class="admin-card-header">
+                <h2>Projector status today</h2>
+            </div>
+            <div class="projector-status-grid">
+                {% for p in projectors %}
+                    <div class="proj-mini-card">
+                        <strong>{{ p.projector_name }}</strong>
+                        <span class="text-muted" style="font-size: 0.78rem; display:block; margin-bottom:6px;">{{ p.projector_code }}</span>
+                        <span class="pill {{ p.badge }}">{{ p.label }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

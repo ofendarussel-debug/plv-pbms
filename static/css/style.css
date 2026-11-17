@@ -1,163 +1,266 @@
-/* Color Palette & CSS Variables */
 :root {
-    --primary-navy: #0B1F44;
-    --accent-blue: #3085C3;
-    --light-bg: #F8F9FA;
-    --card-white: #FFFFFF;
-    --text-dark: #1D2A44;
-    --text-muted: #6C757D;
-    --border-color: #E2E8F0;
-    
-    /* System Status Indicators */
-    --status-green: #27AE60;
-    --status-orange: #E67E22;
-    --status-blue: #2980B9;
-    --status-red: #C0392B;
-    --status-gray: #7F8C8D;
+    --plv-navy: #0E264B;
+    --plv-navy-hover: #173A70;
+    --plv-royal: #1D56B3;
+    --bg-canvas: #F5F7FA;
+    --surface-white: #FFFFFF;
+    --text-dark: #111827;
+    --text-muted: #6B7280;
+    --border-subtle: #E5E7EB;
+    --border-input: #D1D5DB;
+
+    /* Status Pill Colors */
+    --amber-bg: #FEF3C7;
+    --amber-text: #D97706;
+    --green-bg: #DCFCE7;
+    --green-text: #16A34A;
+    --blue-bg: #DBEAFE;
+    --blue-text: #2563EB;
+    --red-bg: #FEE2E2;
+    --red-text: #DC2626;
+    --gray-bg: #F3F4F6;
+    --gray-text: #4B5563;
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-    background-color: var(--light-bg);
+    font-family: "Inter", "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     color: var(--text-dark);
-    display: flex;
-    flex-direction: column;
+    line-height: 1.5;
     min-height: 100vh;
 }
 
-/* Header Navbar */
-.app-header {
-    background-color: var(--primary-navy);
-    color: var(--card-white);
-    padding: 12px 16px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.app-bg {
+    background-color: var(--bg-canvas);
 }
 
-.app-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-}
-
-.app-subtitle {
-    font-size: 0.75rem;
-    opacity: 0.8;
-}
-
-/* Main Body Container */
-.main-content {
-    flex: 1;
-    padding: 16px;
-    max-width: 480px;
-    margin: 0 auto;
-    width: 100%;
-}
-
-/* Login & Auth Cards */
-.auth-card {
-    background: var(--card-white);
-    border-radius: 12px;
-    padding: 24px 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-color);
-    margin-top: 20px;
-}
-
-.auth-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.auth-header h2 {
-    color: var(--primary-navy);
-    font-size: 1.4rem;
-}
-
-.auth-header p {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-}
-
-/* Touch-Friendly Form Elements */
-.mobile-form .form-group {
-    margin-bottom: 16px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--text-dark);
-}
-
-.form-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #FAFAFA;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-    background-color: #FFFFFF;
-}
+.text-muted { color: var(--text-muted); }
+.font-medium { font-weight: 600; }
+.font-normal { font-weight: 400; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
 
 /* Buttons */
 .btn {
-    display: inline-block;
-    padding: 12px 20px;
-    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
     font-weight: 600;
-    text-align: center;
-    border: none;
     border-radius: 8px;
+    border: 1px solid transparent;
     cursor: pointer;
-    min-height: 44px; /* Touch target minimum height */
+    text-decoration: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
+.btn-plv-navy,
 .btn-primary {
-    background-color: #2563EB;
+    background-color: var(--plv-navy);
     color: #FFFFFF;
 }
 
-.btn-block {
+.btn-plv-navy:hover,
+.btn-primary:hover {
+    background-color: var(--plv-navy-hover);
+}
+
+.btn-outline-gray {
+    background-color: #FFFFFF;
+    color: #374151;
+    border-color: var(--border-input);
+}
+
+.btn-outline-gray:hover {
+    background-color: #F9FAFB;
+}
+
+.btn-full {
     width: 100%;
 }
 
-/* Alert Boxes */
-.flash-container {
-    padding: 10px 16px 0 16px;
-    max-width: 480px;
-    margin: 0 auto;
+/* Form Controls */
+.web-form .form-group {
+    margin-bottom: 16px;
+}
+
+.web-form label {
+    display: block;
+    font-size: 0.84rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #1F2937;
+}
+
+.form-control {
     width: 100%;
+    padding: 10px 13px;
+    font-size: 0.92rem;
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: var(--text-dark);
+    font-family: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--plv-navy);
+    box-shadow: 0 0 0 3px rgba(14, 38, 75, 0.1);
+}
+
+.form-readonly {
+    background-color: #F3F4F6;
+    color: #374151;
+    cursor: not-allowed;
+}
+
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.password-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrap .form-control {
+    padding-right: 42px;
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.forgot-link {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+}
+
+.forgot-link:hover {
+    color: var(--plv-navy);
+    text-decoration: underline;
+}
+
+/* PLV Circular Seal on S1 Login */
+.s1-seal-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.s1-seal-img {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.s1-seal-fallback {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #FFFFFF 58%, #0E264B 60%);
+    border: 3px solid #D97706;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--plv-navy);
+    font-weight: 800;
+    font-size: 0.95rem;
+    line-height: 1.05;
+}
+
+.s1-seal-fallback small {
+    font-size: 0.62rem;
+    color: #D97706;
+}
+
+/* Top Bar for Setup Page */
+.topbar {
+    background-color: var(--plv-navy);
+    color: #FFFFFF;
+}
+
+.topbar-inner {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+.brand-badge {
+    background-color: var(--plv-royal);
+    color: #FFFFFF;
+    font-weight: 800;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.brand-text strong { display: block; font-size: 1rem; }
+.brand-text small { display: block; font-size: 0.78rem; color: #CBD5E1; }
+
+/* Flash Alerts */
+.floating-flash {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    max-width: 380px;
 }
 
 .alert {
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    margin-bottom: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.alert-success { background: #E8F8F5; color: #117A65; border: 1px solid #A3E4D7; }
-.alert-danger { background: #FDEDEC; color: #78281F; border: 1px solid #F5B7B1; }
-.alert-info { background: #EBF5FB; color: #1B4F72; border: 1px solid #AED6F1; }
+.alert-success { background: var(--green-bg); color: #166534; border: 1px solid #86EFAC; }
+.alert-danger  { background: var(--red-bg); color: #991B1B; border: 1px solid #FCA5A5; }
+.alert-info    { background: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD; }
 
-.sample-credentials {
-    margin-top: 15px;
-    background: #F1F5F9;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    color: #475569;
+.alert-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: inherit;
+    margin-left: 12px;
 }

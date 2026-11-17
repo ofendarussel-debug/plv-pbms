@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initial Admin Setup — PLV Projector Reservation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+</head>
+<body>
+
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a href="{{ url_for('index') }}" class="brand">
+                <span class="brand-badge">PLV</span>
+                <div class="brand-text">
+                    <strong>PLV – Projector Reservation System</strong>
+                    <small>Pamantasan ng Lungsod ng Valenzuela</small>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <div class="container-centered">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="web-auth-grid">
+            <section class="auth-info-panel">
+                <h1>PLV – Projector Reservation System</h1>
+                <p>
+                    Set up the primary <strong>Administrator</strong> account to create sections, register student section accounts,
+                    manage projector units, review reservation requests, and monitor equipment usage.
+                </p>
+                <ul class="feature-checklist">
+                    <li><strong>Account Control:</strong> Administrator creates all section and student credentials.</li>
+                    <li><strong>Reservation Control:</strong> Students check real-time projector availability and submit requests.</li>
+                    <li><strong>Usage Monitoring:</strong> Track unit assignment, release, and return conditions.</li>
+                </ul>
+            </section>
+
+            <section class="auth-form-card">
+                <h2>Create Administrator Account</h2>
+                <p class="text-muted mb-16">Register the initial system administrator credentials.</p>
+
+                <form action="{{ url_for('setup_admin') }}" method="POST" class="web-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="school_id_number">Employee / Admin ID</label>
+                            <input type="text" id="school_id_number" name="school_id_number" class="form-control" placeholder="Enter Admin ID" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Min. 4 characters" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="full_name">Administrator Full Name</label>
+                        <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Enter full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">School Email (Optional)</label>
+                        <input type="email" id="email" name="email" class="form-control" placeholder="Enter email address">
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Min. 8 characters" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-plv-navy btn-full mt-8">Initialize System &amp; Create Admin</button>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

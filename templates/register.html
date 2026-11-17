@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Section Representative — PLV Projector Reservation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+</head>
+<body class="login-body">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="floating-flash">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="s1-split-container">
+        <div class="s1-left-panel">
+            <div class="s1-campus-overlay"></div>
+            <div class="s1-shape-royal"></div>
+            <div class="s1-shape-navy"></div>
+        </div>
+
+        <div class="s1-right-panel" style="padding-top: 28px; padding-bottom: 28px;">
+            <div class="s1-form-box" style="max-width: 440px;">
+                <div class="s1-brand-header" style="margin-bottom: 20px;">
+                    <div class="s1-seal-wrap" style="margin-bottom: 8px;">
+                        <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}"
+                             alt="PLV Seal"
+                             class="s1-seal-img"
+                             style="width: 58px; height: 58px;"
+                             onerror="this.style.display='none';">
+                    </div>
+                    <h1 style="font-size: 1.45rem;">Section Registration</h1>
+                    <p>Only <strong>1 representative account</strong> is allowed per section</p>
+                </div>
+
+                <form action="{{ url_for('auth.register') }}" method="POST" class="web-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-group">
+                        <label for="section_id">Section</label>
+                        <select id="section_id" name="section_id" class="form-control" required onchange="toggleCustomSection(this.value)">
+                            <option value="" disabled selected>Select your section</option>
+                            {% for sec in sections %}
+                                {% if sec.rep_user_id %}
+                                    <option value="{{ sec.section_id }}" disabled>
+                                        {{ sec.section_name }} — Already Registered ({{ sec.rep_name }})
+                                    </option>
+                                {% else %}
+                                    <option value="{{ sec.section_id }}">{{ sec.section_name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                            <option value="OTHER">Other Section (Type manually...)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="custom-section-wrap" style="display: none;">
+                        <label for="custom_section">Enter Section Name</label>
+                        <input type="text" id="custom_section" name="custom_section" class="form-control" placeholder="e.g. BSIT 2-3">
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="full_name">Representative Full Name</label>
+                            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="e.g. Juan Dela Cruz" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="school_id_number">Student Number</label>
+                            <input type="text" id="school_id_number" name="school_id_number" class="form-control" placeholder="e.g. 23-2808" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="username">Section Username</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="e.g. bsit-2-1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">PLV Email</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="name@plv.edu.ph">
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Min. 6 characters" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-plv-navy btn-full mt-8">Create Section Account</button>
+                </form>
+
+                <p class="s1-helper-text" style="text-align: center;">
+                    Already registered your section?
+                    <a href="{{ url_for('auth.login') }}" class="font-medium" style="color: #0E264B;">Back to Section Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCustomSection(val) {
+            const wrap = document.getElementById('custom-section-wrap');
+            const input = document.getElementById('custom_section');
+            if (val === 'OTHER') {
+                wrap.style.display = 'block';
+                input.required = true;
+            } else {
+                wrap.style.display = 'none';
+                input.required = false;
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

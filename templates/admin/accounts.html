@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Section Accounts — PLV Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo">
+                <div class="admin-brand-text">
+                    <strong>Projector Reservation</strong>
+                    <small>Admin</small>
+                </div>
+            </a>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">Dashboard</a>
+                <a href="{{ url_for('admin.requests_page') }}" class="admin-nav-link">Review Requests</a>
+                <a href="{{ url_for('admin.projectors_page') }}" class="admin-nav-link">Projectors</a>
+                <a href="{{ url_for('admin.accounts_page') }}" class="admin-nav-link active">Accounts</a>
+                <a href="{{ url_for('admin.reports_page') }}" class="admin-nav-link">Calendar and Reports</a>
+            </nav>
+        </div>
+        <div class="admin-logout-box">
+            <a href="{{ url_for('auth.logout') }}" class="admin-logout-btn">Logout</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="admin-page-header">
+            <div>
+                <h1>Accounts</h1>
+                <p>Only one section representative account per section (self-registered by representatives).</p>
+            </div>
+        </div>
+
+        <div class="s2-table-card">
+            {% if accounts %}
+                <table class="s2-table">
+                    <thead>
+                        <tr>
+                            <th>Section</th>
+                            <th>Representative</th>
+                            <th>Username</th>
+                            <th>Student no.</th>
+                            <th>Status</th>
+                            <th>Last login</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for acc in accounts %}
+                            <tr>
+                                <td class="font-medium">{{ acc.section_name }}</td>
+                                <td>{{ acc.full_name }}</td>
+                                <td>{{ acc.username }}</td>
+                                <td class="text-muted">{{ acc.school_id_number }}</td>
+                                <td>
+                                    {% if acc.account_status == 'active' %}
+                                        <span class="pill pill-approved">Active</span>
+                                    {% else %}
+                                        <span class="pill pill-rejected">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted">{{ acc.last_login }}</td>
+                                <td class="s2-actions-cell">
+                                    <form action="{{ url_for('admin.accounts_page') }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="action" value="toggle_status">
+                                        <input type="hidden" name="user_id" value="{{ acc.user_id }}">
+                                        <button type="submit" class="action-link" style="background:none;border:none;cursor:pointer;">
+                                            {{ 'Deactivate' if acc.account_status == 'active' else 'Activate' }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="s2-empty-table">No section representatives have registered yet.</div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

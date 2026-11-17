@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar and Reports — PLV Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo">
+                <div class="admin-brand-text">
+                    <strong>Projector Reservation</strong>
+                    <small>Admin</small>
+                </div>
+            </a>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">Dashboard</a>
+                <a href="{{ url_for('admin.requests_page') }}" class="admin-nav-link">Review Requests</a>
+                <a href="{{ url_for('admin.projectors_page') }}" class="admin-nav-link">Projectors</a>
+                <a href="{{ url_for('admin.accounts_page') }}" class="admin-nav-link">Accounts</a>
+                <a href="{{ url_for('admin.reports_page') }}" class="admin-nav-link active">Calendar and Reports</a>
+            </nav>
+        </div>
+        <div class="admin-logout-box">
+            <a href="{{ url_for('auth.logout') }}" class="admin-logout-btn">Logout</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <div class="admin-page-header">
+            <div>
+                <h1>Calendar and Reports</h1>
+                <p>Monthly schedule overview and reservation export.</p>
+            </div>
+            <a href="{{ url_for('admin.export_csv') }}" class="btn btn-plv-navy">Export CSV Report</a>
+        </div>
+
+        <section class="s2-stats-row s2-stats-4">
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Reservations this month</span>
+                <span class="s2-stat-num color-navy">{{ month_total }}</span>
+            </div>
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Approved</span>
+                <span class="s2-stat-num color-green">{{ month_approved }}</span>
+            </div>
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Returned</span>
+                <span class="s2-stat-num color-navy">{{ month_completed }}</span>
+            </div>
+            <div class="s2-stat-card">
+                <span class="s2-stat-label">Rejected</span>
+                <span class="s2-stat-num" style="color:#DC2626;">{{ month_rejected }}</span>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <div class="admin-card-header">
+                <h2>{{ month_name }}</h2>
+            </div>
+            <table class="cal-table">
+                <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for week in weeks %}
+                        <tr>
+                            {% for cell in week %}
+                                <td>
+                                    {% if cell.day %}
+                                        <span class="cal-day-num">{{ cell.day }}</span>
+                                        {% if cell.count > 0 %}
+                                            <div>
+                                                <span class="cal-badge">{{ cell.count }} booking{{ 's' if cell.count > 1 else '' }}</span>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

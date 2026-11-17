@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Requests — PLV Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo">
+                <div class="admin-brand-text">
+                    <strong>Projector Reservation</strong>
+                    <small>Admin</small>
+                </div>
+            </a>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">Dashboard</a>
+                <a href="{{ url_for('admin.requests_page') }}" class="admin-nav-link active">Review Requests</a>
+                <a href="{{ url_for('admin.projectors_page') }}" class="admin-nav-link">Projectors</a>
+                <a href="{{ url_for('admin.accounts_page') }}" class="admin-nav-link">Accounts</a>
+                <a href="{{ url_for('admin.reports_page') }}" class="admin-nav-link">Calendar and Reports</a>
+            </nav>
+        </div>
+        <div class="admin-logout-box">
+            <a href="{{ url_for('auth.logout') }}" class="admin-logout-btn">Logout</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="admin-page-header">
+            <div>
+                <h1>Review Requests</h1>
+                <p>Approve or reject reservation requests from sections.</p>
+            </div>
+        </div>
+
+        <div class="a2-split">
+            <!-- Left Requests Table -->
+            <div class="admin-card">
+                <div class="filter-tabs">
+                    {% for tab in ['Pending', 'Approved', 'Released', 'Rejected', 'All'] %}
+                        <a href="{{ url_for('admin.requests_page', status=tab) }}"
+                           class="filter-tab {% if status_filter == tab %}active{% endif %}">{{ tab }}</a>
+                    {% endfor %}
+                </div>
+
+                {% if requests_list %}
+                    <table class="s2-table">
+                        <thead>
+                            <tr>
+                                <th>Ref. No.</th>
+                                <th>Section</th>
+                                <th>Subject</th>
+                                <th>Requested</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests_list %}
+                                <tr class="{% if selected_req and selected_req.reservation_id == req.reservation_id %}tr-selected{% endif %}">
+                                    <td class="font-medium">
+                                        <a href="{{ url_for('admin.requests_page', status=status_filter, selected=req.reservation_id) }}" class="action-link">
+                                            {{ req.reservation_code }}
+                                        </a>
+                                    </td>
+                                    <td>{{ req.section_name }}</td>
+                                    <td>{{ req.subject_name }}</td>
+                                    <td class="text-muted">{{ req.requested_on }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted" style="padding: 16px 0;">No {{ status_filter.lower() }} reservation requests found.</p>
+                {% endif %}
+            </div>
+
+            <!-- Right Request Detail & Action Panel -->
+            <div class="admin-card">
+                {% if selected_req %}
+                    <div class="admin-card-header">
+                        <h2>Request {{ selected_req.reservation_code }}</h2>
+                        <span class="pill pill-{{ selected_req.status.lower() }}">{{ selected_req.status }}</span>
+                    </div>
+
+                    <div class="detail-row"><span>Section</span><strong>{{ selected_req.section_name }}</strong></div>
+                    <div class="detail-row"><span>Representative</span><strong>{{ selected_req.student_name }}</strong></div>
+                    <div class="detail-row"><span>Subject</span><strong>{{ selected_req.subject_name }}</strong></div>
+                    <div class="detail-row"><span>Instructor</span><strong>{{ selected_req.instructor_name }}</strong></div>
+                    <div class="detail-row"><span>Room</span><strong>{{ selected_req.classroom_name }}</strong></div>
+                    <div class="detail-row"><span>Date</span><strong>{{ selected_req.formatted_date }}</strong></div>
+                    <div class="detail-row"><span>Time slot</span><strong>{{ selected_req.time_slot }}</strong></div>
+                    <div class="detail-row"><span>Purpose</span><strong>{{ selected_req.remarks }}</strong></div>
+
+                    {% if selected_req.raw_status != 'Pending' %}
+                        <div class="detail-row"><span>Projector</span><strong>{{ selected_req.projector_code }}</strong></div>
+                    {% endif %}
+
+                    {% if selected_req.raw_status == 'Rejected' %}
+                        <div class="detail-row"><span>Rejection reason</span><strong style="color:#DC2626;">{{ selected_req.rejection_reason }}</strong></div>
+                    {% endif %}
+
+                    <!-- ACTIONS FOR PENDING -->
+                    {% if selected_req.raw_status == 'Pending' %}
+                        <form action="{{ url_for('admin.requests_page') }}" method="POST" class="web-form mt-16">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="reservation_id" value="{{ selected_req.reservation_id }}">
+                            <input type="hidden" name="current_filter" value="{{ status_filter }}">
+
+                            <div class="form-group">
+                                <label for="projector_id">Assign projector</label>
+                                <select id="projector_id" name="projector_id" class="form-control">
+                                    {% if available_projectors %}
+                                        {% for p in available_projectors %}
+                                            <option value="{{ p.projector_id }}">{{ p.projector_code }} ({{ p.projector_name }} - {{ p.model }})</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="">No available units for this slot</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rejection_reason">Reason (required when rejecting)</label>
+                                <textarea id="rejection_reason" name="rejection_reason" rows="2" class="form-control" placeholder="Type the reason here"></textarea>
+                            </div>
+
+                            <div class="form-row-2">
+                                <button type="submit" name="action" value="reject" class="btn btn-red">Reject</button>
+                                <button type="submit" name="action" value="approve" class="btn btn-green">Approve</button>
+                            </div>
+                        </form>
+
+                    <!-- ACTIONS FOR APPROVED -->
+                    {% elif selected_req.raw_status == 'Approved' %}
+                        <form action="{{ url_for('admin.requests_page') }}" method="POST" class="web-form mt-16">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="reservation_id" value="{{ selected_req.reservation_id }}">
+                            <input type="hidden" name="current_filter" value="{{ status_filter }}">
+                            <input type="hidden" name="rejection_reason" value="Approval revoked by Administrator.">
+
+                            <button type="submit" name="action" value="release" class="btn btn-plv-navy btn-full mb-16">Mark as released</button>
+                            <button type="submit" name="action" value="reject" class="btn btn-outline-gray btn-full">Reject approval</button>
+                        </form>
+
+                    <!-- ACTIONS FOR RELEASED -->
+                    {% elif selected_req.raw_status == 'Released' %}
+                        <form action="{{ url_for('admin.requests_page') }}" method="POST" class="web-form mt-16">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="reservation_id" value="{{ selected_req.reservation_id }}">
+                            <input type="hidden" name="current_filter" value="{{ status_filter }}">
+
+                            <button type="submit" name="action" value="return" class="btn btn-plv-navy btn-full">Mark as returned</button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">Select a reservation request from the list to review or update its status.</p>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

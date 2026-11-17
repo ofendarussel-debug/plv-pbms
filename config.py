@@ -7,6 +7,8 @@ class Config:
 
     DATABASE_PATH = os.path.join(BASE_DIR, 'data', 'projector.db')
 
+    WTF_CSRF_ENABLED = True
+
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
     PERMANENT_SESSION_LIFETIME = 3600

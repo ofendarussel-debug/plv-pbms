@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projectors — PLV Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo">
+                <div class="admin-brand-text">
+                    <strong>Projector Reservation</strong>
+                    <small>Admin</small>
+                </div>
+            </a>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-link">Dashboard</a>
+                <a href="{{ url_for('admin.requests_page') }}" class="admin-nav-link">Review Requests</a>
+                <a href="{{ url_for('admin.projectors_page') }}" class="admin-nav-link active">Projectors</a>
+                <a href="{{ url_for('admin.accounts_page') }}" class="admin-nav-link">Accounts</a>
+                <a href="{{ url_for('admin.reports_page') }}" class="admin-nav-link">Calendar and Reports</a>
+            </nav>
+        </div>
+        <div class="admin-logout-box">
+            <a href="{{ url_for('auth.logout') }}" class="admin-logout-btn">Logout</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="admin-page-header">
+            <div>
+                <h1>Projectors</h1>
+                <p>Manage projector units and track release and return.</p>
+            </div>
+            <button type="button" class="btn btn-plv-navy" onclick="document.getElementById('add-proj-card').style.display='block'">+ Add projector</button>
+        </div>
+
+        <!-- Add Projector Panel -->
+        <div class="admin-card" id="add-proj-card" style="display: none;">
+            <div class="admin-card-header">
+                <h2>Add Projector</h2>
+                <button type="button" class="alert-close" onclick="document.getElementById('add-proj-card').style.display='none'">&times;</button>
+            </div>
+            <form action="{{ url_for('admin.projectors_page') }}" method="POST" class="web-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="add">
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Unit Name</label>
+                        <input type="text" name="projector_name" class="form-control" placeholder="e.g. Projector F" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Asset Tag</label>
+                        <input type="text" name="projector_code" class="form-control" placeholder="e.g. PLV-PRJ-006" required>
+                    </div>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input type="text" name="model" class="form-control" placeholder="e.g. Epson EB-X06" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                            <option value="Available">Available</option>
+                            <option value="Under Maintenance">Under Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-plv-navy">Save projector</button>
+            </form>
+        </div>
+
+        <div class="s2-table-card">
+            <table class="s2-table">
+                <thead>
+                    <tr>
+                        <th>Unit</th>
+                        <th>Model</th>
+                        <th>Asset tag</th>
+                        <th>Status</th>
+                        <th>Current use</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in projectors %}
+                        <tr>
+                            <td class="font-medium">{{ p.projector_name }}</td>
+                            <td>{{ p.brand }} {{ p.model }}</td>
+                            <td>{{ p.projector_code }}</td>
+                            <td>
+                                {% if p.status == 'Available' %}
+                                    <span class="pill pill-approved">Available</span>
+                                {% elif p.status == 'Borrowed' %}
+                                    <span class="pill pill-inuse">In use</span>
+                                {% elif p.status == 'Under Maintenance' %}
+                                    <span class="pill pill-pending">Maintenance</span>
+                                {% else %}
+                                    <span class="pill pill-returned">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">{{ p.active_use or '—' }}</td>
+                            <td>
+                                <form action="{{ url_for('admin.projectors_page') }}" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="action" value="update_status">
+                                    <input type="hidden" name="projector_id" value="{{ p.projector_id }}">
+                                    {% if p.status == 'Available' %}
+                                        <input type="hidden" name="new_status" value="Under Maintenance">
+                                        <button type="submit" class="action-link" style="background:none;border:none;cursor:pointer;">Set Maintenance</button>
+                                    {% elif p.status == 'Under Maintenance' or p.status == 'Inactive' %}
+                                        <input type="hidden" name="new_status" value="Available">
+                                        <button type="submit" class="action-link" style="background:none;border:none;cursor:pointer;">Enable</button>
+                                    {% else %}
+                                        <a href="{{ url_for('admin.requests_page', status='Released') }}" class="action-link">Mark returned</a>
+                                    {% endif %}
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
