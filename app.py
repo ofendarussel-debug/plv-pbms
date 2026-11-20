@@ -199,9 +199,15 @@ def create_app():
         )
 
     @app.errorhandler(404)
-    def page_not_found(error):
-        flash('The requested page was not found.', 'danger')
-        return redirect(url_for('index'))
+    def page_not_found(e):
+        if request.path.startswith('/static/') or request.path == '/favicon.ico':
+            return '', 404
+        flash('The requested page was not found.', 'warning')
+        if 'user_id' in session:
+            if session.get('role') == 'admin':
+                return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('student_dashboard'))
+        return redirect(url_for('auth.login'))
 
     return app
 
@@ -209,4 +215,4 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

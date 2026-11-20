@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Reservation {{ res.reservation_code }} — PLV</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popups.css') }}">
+</head>
+<body class="app-bg">
+
+    <header class="plv-navbar">
+        <div class="plv-navbar-inner">
+            <a href="{{ url_for('student_dashboard') }}" class="plv-nav-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo" class="plv-navbar-logo">
+                <span class="plv-nav-title">PLV Projector Reservation</span>
+            </a>
+            <nav class="plv-nav-links">
+                <a href="{{ url_for('student_dashboard') }}" class="plv-nav-item">Dashboard</a>
+                <a href="{{ url_for('booking.reserve') }}" class="plv-nav-item">Reserve a Projector</a>
+                <a href="{{ url_for('booking.my_reservations') }}" class="plv-nav-item active">My Reservations</a>
+            </nav>
+            <div class="plv-nav-actions" style="display:flex; align-items:center; gap:10px;">
+                <a href="{{ url_for('booking.profile') }}" class="plv-profile-icon-btn" title="User Profile">&#128100;</a>
+                <a href="{{ url_for('auth.logout') }}" class="plv-logout-btn">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="s2-container">
+        <p class="text-muted" style="font-size: 0.82rem; margin-bottom: 10px;">
+            <a href="{{ url_for('booking.my_reservations') }}" class="action-link">My Reservations</a> / Edit {{ res.reservation_code }}
+        </p>
+
+        <div class="s2-header-row">
+            <div>
+                <h1 class="s2-greeting">Edit Reservation</h1>
+                <p class="s2-subtitle">You can edit a reservation only while it is Pending.</p>
+            </div>
+            <span class="pill pill-pending">Pending</span>
+        </div>
+
+        <section class="s2-table-card" style="padding: 24px; max-width: 760px;">
+            <form action="{{ url_for('booking.edit_reservation', reservation_id=res.reservation_id) }}" method="POST" class="web-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label>Section</label>
+                        <input type="text" class="form-control" value="{{ res.section_name }}" readonly style="background:#F3F4F6;">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject_name">Subject</label>
+                        <input type="text" id="subject_name" name="subject_name" class="form-control" value="{{ res.subject_name }}" required>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="instructor_name">Instructor</label>
+                        <input type="text" id="instructor_name" name="instructor_name" class="form-control" value="{{ res.instructor_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classroom_name">Room / classroom</label>
+                        <input type="text" id="classroom_name" name="classroom_name" class="form-control" value="{{ res.classroom_name }}" required>
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="reservation_date">Date</label>
+                        <input type="date" id="reservation_date" name="reservation_date" class="form-control" value="{{ res.reservation_date }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time_slot">Time slot</label>
+                        <select id="time_slot" name="time_slot" class="form-control">
+                            {% for s in time_slots %}
+                                <option value="{{ s.value }}" {% if s.value == current_slot_val %}selected{% endif %}>{{ s.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarks">Purpose / remarks (optional)</label>
+                    <textarea id="remarks" name="remarks" rows="3" class="form-control">{{ res.remarks or '' }}</textarea>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
+                    <a href="{{ url_for('booking.my_reservations') }}" class="btn btn-outline-gray">Cancel</a>
+                    <button type="submit" class="btn btn-plv-navy">Save changes</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

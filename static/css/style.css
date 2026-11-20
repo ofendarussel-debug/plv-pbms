@@ -163,75 +163,6 @@ body {
     text-decoration: underline;
 }
 
-/* PLV Circular Seal on S1 Login */
-.s1-seal-wrap {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 14px;
-}
-
-.s1-seal-img {
-    width: 74px;
-    height: 74px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.s1-seal-fallback {
-    width: 74px;
-    height: 74px;
-    border-radius: 50%;
-    background: radial-gradient(circle, #FFFFFF 58%, #0E264B 60%);
-    border: 3px solid #D97706;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--plv-navy);
-    font-weight: 800;
-    font-size: 0.95rem;
-    line-height: 1.05;
-}
-
-.s1-seal-fallback small {
-    font-size: 0.62rem;
-    color: #D97706;
-}
-
-/* Top Bar for Setup Page */
-.topbar {
-    background-color: var(--plv-navy);
-    color: #FFFFFF;
-}
-
-.topbar-inner {
-    max-width: 1240px;
-    margin: 0 auto;
-    padding: 14px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: #FFFFFF;
-}
-
-.brand-badge {
-    background-color: var(--plv-royal);
-    color: #FFFFFF;
-    font-weight: 800;
-    padding: 6px 10px;
-    border-radius: 6px;
-}
-
-.brand-text strong { display: block; font-size: 1rem; }
-.brand-text small { display: block; font-size: 0.78rem; color: #CBD5E1; }
-
 /* Flash Alerts */
 .floating-flash {
     position: fixed;
@@ -263,4 +194,34 @@ body {
     cursor: pointer;
     color: inherit;
     margin-left: 12px;
+}
+.status-tab {
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    color: #374151;
+}
+
+.status-tab.active {
+    background: #0E264B;
+    border: 1px solid #0E264B;
+    color: #FFFFFF;
+}
+.action-link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.action-link.deactivate {
+    color: #DC2626;
+}
+
+.action-link.activate {
+    color: #16A34A;
 }

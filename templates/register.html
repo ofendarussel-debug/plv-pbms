@@ -47,48 +47,60 @@
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="form-group">
-                        <label for="section_id">Section</label>
-                        <select id="section_id" name="section_id" class="form-control" required onchange="toggleCustomSection(this.value)">
-                            <option value="" disabled selected>Select your section</option>
-                            {% for sec in sections %}
-                                {% if sec.rep_user_id %}
-                                    <option value="{{ sec.section_id }}" disabled>
-                                        {{ sec.section_name }} — Already Registered ({{ sec.rep_name }})
-                                    </option>
-                                {% else %}
-                                    <option value="{{ sec.section_id }}">{{ sec.section_name }}</option>
-                                {% endif %}
-                            {% endfor %}
-                            <option value="OTHER">Other Section (Type manually...)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="custom-section-wrap" style="display: none;">
-                        <label for="custom_section">Enter Section Name</label>
-                        <input type="text" id="custom_section" name="custom_section" class="form-control" placeholder="e.g. BSIT 2-3">
+                        <label for="section_name">Section</label>
+                        <input type="text"
+                               id="section_name"
+                               name="section_name"
+                               class="form-control"
+                               placeholder="Type your section (e.g. BSIT 2-1)"
+                               value="{{ form_data.section_name if form_data else '' }}"
+                               required>
                     </div>
 
                     <div class="form-row-2">
                         <div class="form-group">
                             <label for="full_name">Representative Full Name</label>
-                            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="e.g. Juan Dela Cruz" required>
+                            <input type="text"
+                                   id="full_name"
+                                   name="full_name"
+                                   class="form-control"
+                                   placeholder="e.g. George Cabanlit"
+                                   value="{{ form_data.full_name if form_data else '' }}"
+                                   required>
                         </div>
 
                         <div class="form-group">
                             <label for="school_id_number">Student Number</label>
-                            <input type="text" id="school_id_number" name="school_id_number" class="form-control" placeholder="e.g. 23-2808" required>
+                            <input type="text"
+                                   id="school_id_number"
+                                   name="school_id_number"
+                                   class="form-control"
+                                   placeholder="e.g. 25-2708"
+                                   value="{{ form_data.school_id_number if form_data else '' }}"
+                                   required>
                         </div>
                     </div>
 
                     <div class="form-row-2">
                         <div class="form-group">
                             <label for="username">Section Username</label>
-                            <input type="text" id="username" name="username" class="form-control" placeholder="e.g. bsit-2-1" required>
+                            <input type="text"
+                                   id="username"
+                                   name="username"
+                                   class="form-control"
+                                   placeholder="e.g. bsit-2-1"
+                                   value="{{ form_data.username if form_data else '' }}"
+                                   required>
                         </div>
 
                         <div class="form-group">
                             <label for="email">PLV Email</label>
-                            <input type="email" id="email" name="email" class="form-control" placeholder="name@plv.edu.ph">
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   class="form-control"
+                                   placeholder="georgepogi@gmail.com"
+                                   value="{{ form_data.email if form_data else '' }}">
                         </div>
                     </div>
 
@@ -115,19 +127,6 @@
         </div>
     </div>
 
-    <script>
-        function toggleCustomSection(val) {
-            const wrap = document.getElementById('custom-section-wrap');
-            const input = document.getElementById('custom_section');
-            if (val === 'OTHER') {
-                wrap.style.display = 'block';
-                input.required = true;
-            } else {
-                wrap.style.display = 'none';
-                input.required = false;
-            }
-        }
-    </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

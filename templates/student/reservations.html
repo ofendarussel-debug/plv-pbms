@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Reservations — PLV Projector Reservation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popups.css') }}">
+</head>
+<body class="app-bg">
+
+    <header class="plv-navbar">
+        <div class="plv-navbar-inner">
+            <a href="{{ url_for('student_dashboard') }}" class="plv-nav-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo" class="plv-navbar-logo">
+                <span class="plv-nav-title">PLV Projector Reservation</span>
+            </a>
+
+            <nav class="plv-nav-links">
+                <a href="{{ url_for('student_dashboard') }}" class="plv-nav-item">Dashboard</a>
+                <a href="{{ url_for('booking.reserve') }}" class="plv-nav-item">Reserve a Projector</a>
+                <a href="{{ url_for('booking.my_reservations') }}" class="plv-nav-item active">My Reservations</a>
+            </nav>
+
+            <div class="plv-nav-actions" style="display:flex; align-items:center; gap:10px;">
+                <a href="{{ url_for('booking.profile') }}" class="plv-profile-icon-btn" title="User Profile">&#128100;</a>
+                <button type="button" class="plv-logout-btn" onclick="openModal('logout-modal')">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="s2-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="s2-header-row">
+            <div>
+                <h1 class="s2-greeting">My Reservations</h1>
+                <p class="s2-subtitle">
+                    {% if status_filter == 'All' %}
+                        All requests made by your section ({{ session.section_name }}).
+                    {% else %}
+                        Showing only: {{ status_filter }}
+                    {% endif %}
+                </p>
+            </div>
+            <a href="{{ url_for('booking.reserve') }}" class="btn btn-plv-navy">+ Reserve a Projector</a>
+        </div>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;">
+            {% for tab in ['All', 'Pending', 'Approved', 'Released', 'Rejected', 'Returned', 'Cancelled'] %}
+                <a href="{{ url_for('booking.my_reservations', status=tab) }}"
+                    class="status-tab {{ 'active' if status_filter == tab else '' }}">
+                {{ tab }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <div class="s2-table-card">
+            {% if reservations %}
+                <table class="s2-table">
+                    <thead>
+                        <tr>
+                            <th>Ref. No.</th>
+                            <th>Subject</th>
+                            <th>Date and time</th>
+                            <th>Room</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for res in reservations %}
+                            <tr>
+                                <td class="font-medium">{{ res.reservation_code }}</td>
+                                <td>{{ res.subject_name }}</td>
+                                <td class="text-muted">{{ res.short_date_time }}</td>
+                                <td class="text-muted">{{ res.classroom_name }}</td>
+                                <td>
+                                    <span class="pill pill-{{ res.status.lower() }}">{{ res.status }}</span>
+                                </td>
+                                <td class="s2-actions-cell">
+                                    {% if res.raw_status == 'Pending' %}
+                                        <a href="{{ url_for('booking.edit_reservation', reservation_id=res.reservation_id) }}" class="action-link">Edit</a>
+                                        <button type="button" class="action-link" style="background:none;border:none;color:#DC2626;cursor:pointer;"
+                                                onclick="openCancelModal('{{ res.reservation_id }}', '{{ res.reservation_code }}', '{{ res.subject_name }} · {{ res.classroom_name }}', '{{ res.short_date_time }}')">
+                                            Cancel
+                                        </button>
+                                    {% elif res.raw_status == 'Rejected' %}
+                                        <button type="button" class="action-link" style="background:none;border:none;cursor:pointer;"
+                                                onclick="openReasonModal('{{ res.reservation_code }}', '{{ res.subject_name }} · {{ res.classroom_name }}', '{{ res.short_date_time }}', `{{ res.rejection_reason }}`)">
+                                            View reason
+                                        </button>
+                                    {% else %}
+                                        <a href="{{ url_for('booking.view_reservation', reservation_id=res.reservation_id) }}" class="action-link">View</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="s2-empty-table" style="padding: 40px 20px;">
+                    <strong>No {{ '' if status_filter == 'All' else status_filter.lower() }} reservations</strong><br>
+                    <span class="text-muted" style="font-size: 0.85rem;">Requests matching this status will appear here.</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <p class="text-muted" style="font-size: 0.8rem; margin-top: 10px;">
+            Showing {{ reservations|length }} of {{ total_all }} reservations
+        </p>
+    </main>
+
+    <!-- Cancel Reservation Popup -->
+    <div id="cancel-modal" class="plv-modal-backdrop">
+        <div class="plv-modal-box plv-modal-center">
+            <div class="modal-icon-circle icon-red">!</div>
+            <h3 id="cancel-modal-title" style="font-size: 1.1rem; color:#111827;">Cancel reservation?</h3>
+            <div class="modal-summary-card">
+                <strong id="cancel-modal-sub"></strong><br>
+                <span id="cancel-modal-dt" class="text-muted"></span>
+            </div>
+            <form action="{{ url_for('booking.my_reservations', status=status_filter) }}" method="POST" class="web-form" style="text-align: left;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="cancel">
+                <input type="hidden" name="reservation_id" id="cancel-res-id">
+
+                <div class="form-group">
+                    <label>Reason (optional)</label>
+                    <input type="text" name="cancel_reason" class="form-control" placeholder="e.g. Class was moved to another day">
+                </div>
+                <p class="text-muted" style="font-size: 0.78rem; margin-bottom: 14px;">
+                    The projector will be released for other sections. This cannot be undone.
+                </p>
+                <div class="form-row-2">
+                    <button type="button" class="btn btn-outline-gray" onclick="closeModal('cancel-modal')">Keep reservation</button>
+                    <button type="submit" class="btn" style="background:#DC2626;color:#FFFFFF;">Yes, cancel it</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Rejection Reason Popup -->
+    <div id="reason-modal" class="plv-modal-backdrop">
+        <div class="plv-modal-box plv-modal-center">
+            <div class="modal-icon-circle icon-red">&times;</div>
+            <h3 id="reason-modal-title" style="font-size: 1.1rem; color:#111827;">Why was it rejected?</h3>
+            <div class="modal-summary-card">
+                <strong id="reason-modal-sub"></strong><br>
+                <span id="reason-modal-dt" class="text-muted"></span>
+            </div>
+            <div class="modal-reason-box">
+                <strong>Reason from the Admin</strong><br>
+                <span id="reason-modal-text"></span>
+            </div>
+            <div class="form-row-2 mt-16">
+                <button type="button" class="btn btn-outline-gray" onclick="closeModal('reason-modal')">Close</button>
+                <a href="{{ url_for('booking.reserve') }}" class="btn btn-plv-navy">Reserve again</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Popup -->
+    <div id="logout-modal" class="plv-modal-backdrop">
+        <div class="plv-modal-box plv-modal-center">
+            <div class="modal-icon-circle icon-blue">&#10140;</div>
+            <h3 style="font-size: 1.15rem; color:#111827; margin-bottom: 6px;">Log out of your account?</h3>
+            <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 18px;">
+                You will need to sign in again to reserve a projector. Pending reservations will stay as they are.
+            </p>
+            <div class="form-row-2">
+                <button type="button" class="btn btn-outline-gray" onclick="closeModal('logout-modal')">Stay Logged In</button>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-plv-navy">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        function openCancelModal(resId, code, sub, dt) {
+            document.getElementById('cancel-res-id').value = resId;
+            document.getElementById('cancel-modal-title').textContent = 'Cancel reservation ' + code + '?';
+            document.getElementById('cancel-modal-sub').textContent = sub;
+            document.getElementById('cancel-modal-dt').textContent = dt;
+            openModal('cancel-modal');
+        }
+
+        function openReasonModal(code, sub, dt, reason) {
+            document.getElementById('reason-modal-title').textContent = 'Why was ' + code + ' rejected?';
+            document.getElementById('reason-modal-sub').textContent = sub;
+            document.getElementById('reason-modal-dt').textContent = dt;
+            document.getElementById('reason-modal-text').textContent = reason;
+            openModal('reason-modal');
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

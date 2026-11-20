@@ -1,0 +1,226 @@
+.plv-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.plv-modal-backdrop.open {
+    display: flex;
+}
+
+.plv-modal-box {
+    background: #FFFFFF;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 440px;
+    padding: 28px 26px;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.18);
+    position: relative;
+}
+
+.plv-modal-center {
+    text-align: center;
+}
+
+.modal-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-bottom: 14px;
+}
+
+.icon-red { background: #FEE2E2; color: #DC2626; }
+.icon-amber { background: #FEF3C7; color: #D97706; }
+.icon-green { background: #DCFCE7; color: #16A34A; }
+.icon-blue { background: #DBEAFE; color: #1D4ED8; }
+
+.modal-summary-card {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 14px 0;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.modal-reason-box {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.85rem;
+    text-align: left;
+    margin: 12px 0;
+}
+
+.plv-profile-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    text-decoration: none;
+    background: transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.plv-profile-icon-btn:hover,
+.plv-profile-icon-btn.active {
+    background: #1D56B3;
+    border-color: #1D56B3;
+}
+
+button.plv-logout-btn,
+a.plv-logout-btn {
+    background: transparent;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+button.plv-logout-btn:hover,
+a.plv-logout-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Reservation */
+.s7-view-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.timeline-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0 10px;
+    border-left: 2px solid #E5E7EB;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 0 0 18px 20px;
+    font-size: 0.86rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -7px;
+    top: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #D1D5DB;
+    border: 2px solid #FFFFFF;
+}
+
+.timeline-item.done .timeline-dot {
+    background: #16A34A;
+}
+
+.timeline-item.rejected .timeline-dot {
+    background: #DC2626;
+}
+
+.pickup-reminder-box {
+    margin-top: 18px;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+    color: #1E3A8A;
+}
+
+/* Student User Profile Layout */
+.profile-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 22px;
+    align-items: start;
+}
+
+.profile-avatar-circle {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background: #0E264B;
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+}
+
+.profile-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.profile-mini-stats div strong {
+    display: block;
+    font-size: 1.25rem;
+    color: #0E264B;
+}
+
+.profile-mini-stats div span {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+@media screen and (max-width: 860px) {
+    .s7-view-grid,
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.9rem;
+}
+
+.detail-row span {
+    color: #64748B;
+}
+
+.detail-row strong {
+    color: #0F172A;
+    text-align: right;
+}

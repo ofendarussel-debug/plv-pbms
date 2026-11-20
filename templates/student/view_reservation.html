@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservation {{ detail.reservation_code }} — PLV</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popups.css') }}">
+</head>
+<body class="app-bg">
+
+    <header class="plv-navbar">
+        <div class="plv-navbar-inner">
+            <a href="{{ url_for('student_dashboard') }}" class="plv-nav-brand">
+                <img src="{{ url_for('static', filename='image/plv-logo.jpg') }}" alt="PLV Logo" class="plv-navbar-logo">
+                <span class="plv-nav-title">PLV Projector Reservation</span>
+            </a>
+            <nav class="plv-nav-links">
+                <a href="{{ url_for('student_dashboard') }}" class="plv-nav-item">Dashboard</a>
+                <a href="{{ url_for('booking.reserve') }}" class="plv-nav-item">Reserve a Projector</a>
+                <a href="{{ url_for('booking.my_reservations') }}" class="plv-nav-item active">My Reservations</a>
+            </nav>
+            <div class="plv-nav-actions" style="display:flex; align-items:center; gap:10px;">
+                <a href="{{ url_for('booking.profile') }}" class="plv-profile-icon-btn" title="User Profile">&#128100;</a>
+                <a href="{{ url_for('auth.logout') }}" class="plv-logout-btn">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="s2-container">
+        <p class="text-muted" style="font-size: 0.82rem; margin-bottom: 10px;">
+            <a href="{{ url_for('booking.my_reservations') }}" class="action-link">My Reservations</a> / {{ detail.reservation_code }}
+        </p>
+
+        <div class="s2-header-row">
+            <div>
+                <h1 class="s2-greeting">Reservation {{ detail.reservation_code }}</h1>
+                <p class="s2-subtitle">Submitted on {{ detail.submitted_on }}</p>
+            </div>
+            <span class="pill pill-{{ detail.status.lower() }}" style="font-size: 0.9rem; padding: 6px 14px;">{{ detail.status }}</span>
+        </div>
+
+        <div class="s7-view-grid">
+            <!-- Left: Reservation Details -->
+            <div class="s2-table-card" style="padding: 24px;">
+                <h3 style="margin-bottom: 16px;">Reservation details</h3>
+                <div class="detail-row"><span>Section</span><strong>{{ detail.section_name }}</strong></div>
+                <div class="detail-row"><span>Subject</span><strong>{{ detail.subject_name }}</strong></div>
+                <div class="detail-row"><span>Instructor</span><strong>{{ detail.instructor_name }}</strong></div>
+                <div class="detail-row"><span>Room / classroom</span><strong>{{ detail.room }}</strong></div>
+                <div class="detail-row"><span>Date</span><strong>{{ detail.date_label }}</strong></div>
+                <div class="detail-row"><span>Time slot</span><strong>{{ detail.time_label }}</strong></div>
+                <div class="detail-row"><span>Assigned projector</span><strong>{{ detail.projector_code or 'Pending assignment' }}</strong></div>
+                <div class="detail-row"><span>Purpose / remarks</span><strong>{{ detail.remarks or 'None' }}</strong></div>
+
+                <div style="margin-top: 22px; display: flex; justify-content: flex-end;">
+                    <a href="{{ url_for('booking.my_reservations') }}" class="btn btn-plv-navy">Back to My Reservations</a>
+                </div>
+            </div>
+
+            <!-- Right: Status Timeline -->
+            <div class="s2-table-card" style="padding: 24px;">
+                <h3 style="margin-bottom: 12px;">Status timeline</h3>
+                <ul class="timeline-list">
+                    <li class="timeline-item done">
+                        <span class="timeline-dot"></span>
+                        <strong>Submitted</strong>
+                        <div class="text-muted">{{ detail.submitted_label }}</div>
+                    </li>
+
+                    {% if is_rejected %}
+                        <li class="timeline-item rejected">
+                            <span class="timeline-dot"></span>
+                            <strong>{{ detail.status }}</strong>
+                            <div class="text-muted">{{ detail.admin_remarks or 'Request did not proceed' }}</div>
+                        </li>
+                    {% else %}
+                        <li class="timeline-item {% if is_approved %}done{% endif %}">
+                            <span class="timeline-dot"></span>
+                            <strong>Approved</strong>
+                            <div class="text-muted">{% if is_approved %}Approved by admin{% else %}Waiting for admin review{% endif %}</div>
+                        </li>
+
+                        <li class="timeline-item {% if is_released %}done{% endif %}">
+                            <span class="timeline-dot"></span>
+                            <strong>Released</strong>
+                            <div class="text-muted">{% if is_released %}Unit released ({{ detail.projector_code or 'Assigned' }}){% else %}Waiting for pickup{% endif %}</div>
+                        </li>
+
+                        <li class="timeline-item {% if is_returned %}done{% endif %}">
+                            <span class="timeline-dot"></span>
+                            <strong>Returned</strong>
+                            <div class="text-muted">{% if is_returned %}Returned & completed{% else %}After class{% endif %}</div>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <div class="pickup-reminder-box">
+                    <strong>Pickup reminder</strong><br>
+                    Get the projector from the NSTP Office before your class and return it right after.
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

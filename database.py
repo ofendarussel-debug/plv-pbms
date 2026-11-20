@@ -210,7 +210,7 @@ def seed_demo_data():
             '102825',
             'Franchezca Mhaica Olivar',
             'cheeze',
-            'chezca@plv.edu.ph',
+            'chezca@gmail.com',
             generate_password_hash('chezca1028'),
             section_id
         ))
